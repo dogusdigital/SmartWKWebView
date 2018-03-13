@@ -7,18 +7,18 @@
 
 import Foundation
 
-public class PannableViewController: UIViewController {
+open class PannableViewController: UIViewController {
     var panGestureRecognizer: UIPanGestureRecognizer?
     var originalPosition: CGPoint?
     var currentPositionTouched: CGPoint?
     
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestureAction(_:)) )
         view.addGestureRecognizer(panGestureRecognizer!)
     }
     
-    public override func viewDidLayoutSubviews() {
+    open override func viewDidLayoutSubviews() {
         super .viewDidLayoutSubviews()
         view.frame = UIScreen.main.bounds
         originalPosition = view.center

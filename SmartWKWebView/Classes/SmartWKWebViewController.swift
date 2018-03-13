@@ -9,13 +9,13 @@ import Foundation
 import UIKit
 import WebKit
 
-public class SmartWKWebViewController: PannableViewController, WKNavigationDelegate, UIScrollViewDelegate {
+open class SmartWKWebViewController: PannableViewController, WKNavigationDelegate, UIScrollViewDelegate {
 
     
     // MARK: - Public Variables
     
-    public var barHeight: CGFloat = 44
-    public var topMargin: CGFloat = 20
+    public var barHeight: CGFloat = 60
+    public var topMargin: CGFloat = 40
     public var stringLoading = "Loading"
     public var url: URL!
     public var webView: WKWebView!
@@ -26,7 +26,7 @@ public class SmartWKWebViewController: PannableViewController, WKNavigationDeleg
     
     private var backgroundBlackOverlay: UIView = {
         let v = UIView(frame: CGRect.zero);
-        v.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+        v.backgroundColor = UIColor.white
         return v;
     } ()
     
@@ -52,11 +52,11 @@ public class SmartWKWebViewController: PannableViewController, WKNavigationDeleg
     
     // MARK: - View Lifecycle
     
-    public override func loadView() {
+    open override func loadView() {
         self.view = UIView(frame: CGRect.zero)
     }
     
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
         view.addSubview(self.backgroundBlackOverlay)
@@ -82,7 +82,7 @@ public class SmartWKWebViewController: PannableViewController, WKNavigationDeleg
         view.addSubview(webView)
     }
     
-    public override func viewWillAppear(_ animated: Bool) {
+    open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         toolbar.addressLabel.text = url?.absoluteString ?? ""
@@ -94,7 +94,7 @@ public class SmartWKWebViewController: PannableViewController, WKNavigationDeleg
         }
     }
     
-    public override func viewDidLayoutSubviews() {
+    open override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         webView.frame = CGRect(x: 0, y: barHeight + topMargin,
@@ -134,7 +134,7 @@ public class SmartWKWebViewController: PannableViewController, WKNavigationDeleg
         decisionHandler(.allow)
     }
     
-    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "estimatedProgress" {
             toolbar.progressView.progress = Float(webView.estimatedProgress)
             toolbar.progressView.isHidden = toolbar.progressView.progress == 1
@@ -148,6 +148,13 @@ public class SmartWKWebViewController: PannableViewController, WKNavigationDeleg
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         toolbar.titleLabel.text = webView.title
+        
+        var scriptContent = "var meta = document.createElement('meta');"
+        scriptContent += "meta.name='viewport';"
+        scriptContent += "meta.content='width=device-width';"
+        scriptContent += "document.getElementsByTagName('head')[0].appendChild(meta);"
+        
+        webView.evaluateJavaScript(scriptContent, completionHandler: nil)
     }
     
     
